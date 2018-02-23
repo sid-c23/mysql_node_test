@@ -1,0 +1,3 @@
+TODO List:
+create routes for api to add projects, messages, etc.
+use react to build front end
