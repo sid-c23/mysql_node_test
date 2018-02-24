@@ -41,6 +41,7 @@ apiRoutes.post('/create/project', (req, res) => {
     var projectName = req.body.projectName;
     var projectCode = req.body.projectCode;
     var projectOwnerId = req.decoded.user_id;
+    //check if code is really unique against database
     connection.query(`INSERT into projects VALUES ('${projectName}', '${projectCode}', '${projectOwnerId}', NULL)`, (err, results) => {
         if (err) {
            throw err; 

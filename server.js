@@ -40,12 +40,14 @@ app.post('/create/user', (req, res) => {
     var passwordDigest = req.body.password;
     var email = req.body.email;
     //validate if username and email are really unique
-    //requires another connection to the database 
+    //requires another connection to the database before insert
     connection.query(`INSERT INTO users VALUES ('${username}', '${passwordDigest}', '${email}', NULL)`, (err, result) => {
         if(err) throw err;
-        //create token
         connection.query(`SELECT user_id FROM users WHERE email='${email}'`, (err, results, fields) => {
+            if (err) throw err;
             console.log(results[0].user_id) 
+
+            //create token
             const payload = {
                 username: username,
                 email: email,
