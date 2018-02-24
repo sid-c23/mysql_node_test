@@ -3,6 +3,7 @@ var apiRoutes = express.Router();
 var jwt = require('jsonwebtoken');
 var SECRET = 'qwerty123';
 var connection = require('./db_config')
+
 apiRoutes.use( (req, res, next) => {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) {
@@ -34,4 +35,17 @@ apiRoutes.get('/users', (req, res) => {
     })
 })
 //TODO: post messages, projects, etc. for users
+apiRoutes.post('/create/project', (req, res) => {
+    var projectName = req.body.projectName;
+    var projectCode = req.body.projectCode;
+    var projectOwnerId = req.body.projectOwnerId;
+    connection.query(`INSERT into projects VALUES ('${projectName}', '${projectCode}', '${projectOwnerId}', NULL)`, (err, results) => {
+        if (err) {
+           throw err; 
+        }
+        res.json({ success: true, message: results });
+        connection.query(`INSERT into user_projects VALUES ('${projectOwnerId}', '${results['insertId']}')`)
+    })    
+})
+
 module.exports = apiRoutes;

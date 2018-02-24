@@ -12,13 +12,14 @@ var PORT = process.env.PORT || 8080;
 var connection = require('./db_config');
 
 connection.connect();
-
+/* test
 connection.query('SELECT * FROM users', (err, res, fields) => {
     if( err ) throw err;
     for(i=0; i<res.length; i++) {
         console.log(res[i])
     }
 })
+*/
  
 //middleware
 app.use(bodyParser.urlencoded({ extended: false }));
