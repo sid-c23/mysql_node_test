@@ -4,6 +4,7 @@ var jwt = require('jsonwebtoken');
 var SECRET = 'qwerty123';
 var connection = require('./db_config')
 
+//authentication
 apiRoutes.use( (req, res, next) => {
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) {
@@ -29,7 +30,8 @@ apiRoutes.get('/users', (req, res) => {
             res.json({ success: false, message: "An error occured!"});
             throw err;
         } else {
-            console.log(res);
+            //console.log(req.decoded);
+
             return res.status(200).json({ success: true, message: results })
         }
     })
@@ -38,14 +40,21 @@ apiRoutes.get('/users', (req, res) => {
 apiRoutes.post('/create/project', (req, res) => {
     var projectName = req.body.projectName;
     var projectCode = req.body.projectCode;
-    var projectOwnerId = req.body.projectOwnerId;
+    var projectOwnerId = req.decoded.user_id;
     connection.query(`INSERT into projects VALUES ('${projectName}', '${projectCode}', '${projectOwnerId}', NULL)`, (err, results) => {
         if (err) {
            throw err; 
         }
-        res.json({ success: true, message: results });
         connection.query(`INSERT into user_projects VALUES ('${projectOwnerId}', '${results['insertId']}')`)
+        return res.json({ success: true, message: results });
     })    
+})
+
+apiRoutes.get('/projects/all', (req, res) => {
+    connection.query('SELECT name, code from projects', (err, results) => {
+        if (err) throw err;
+        return res.json({ success: true, message: results })
+    })
 })
 
 module.exports = apiRoutes;

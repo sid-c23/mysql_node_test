@@ -39,19 +39,26 @@ app.post('/create/user', (req, res) => {
     var username = req.body.username;
     var passwordDigest = req.body.password;
     var email = req.body.email;
-    console.log(req.body.username)
+    //validate if username and email are really unique
+    //requires another connection to the database 
     connection.query(`INSERT INTO users VALUES ('${username}', '${passwordDigest}', '${email}', NULL)`, (err, result) => {
         if(err) throw err;
         //create token
-        const payload = {
-            username: username,
-            email: email
-        }
-        var token = jwt.sign(payload, SECRET, {
-            expiresIn: '1h'
-        })
-        res.json({ success: true, message: "User successfully created!", token: token })
+        connection.query(`SELECT user_id FROM users WHERE email='${email}'`, (err, results, fields) => {
+            console.log(results[0].user_id) 
+            const payload = {
+                username: username,
+                email: email,
+                user_id: results[0].user_id
+            }
+            var token = jwt.sign(payload, SECRET, {
+                expiresIn: '1h'
+            })
+            res.json({ success: true, message: "User successfully created!", token: token })
 
+                
+        })
+        
     })
 })
 
